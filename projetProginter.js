@@ -1,23 +1,42 @@
+
+itemList = new Mongo.Collection('items');
+archives = new Mongo.Collection('archives');
+evenementsEnCours = new Mongo.Collection('event');
+
 if (Meteor.isClient) {
-  // counter starts at 0
-  Session.setDefault('counter', 0);
+//helpers
+  Template.pageAccueil.helpers({
 
-  Template.hello.helpers({
-    counter: function () {
-      return Session.get('counter');
-    }
   });
+  Template.profil.helpers({
+    
+  });
+  Template.formulaire.helpers({
+    
+  });
+  Template.evenement.helpers({
+    
+  });
+//events
+  Template.pageAccueil.events({
 
-  Template.hello.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set('counter', Session.get('counter') + 1);
-    }
+  });
+  Template.profil.events({
+    
+  });
+  Template.formulaire.events({
+    
+  });
+  Template.evenement.events({
+    
   });
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
-    // code to run on server at startup
   });
 }
+//methodes
+Meteor.methods({
+
+});
