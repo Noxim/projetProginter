@@ -1,11 +1,29 @@
 <head>
   <title>projetProginter</title>
+  <script>
+//script d'initialisation du calendrier. Il DOIT être ici d'après le tuto
+ $(document).ready(function() {
+      $('#calendar').fullCalendar({
+      		aspectratio: 200,
+      		height:'auto',
+      		contentheight:25,
+
+            dayClick: function(date,jsEvent,view) {
+            	//Si vous vous emmerdez, trouvez le moyen de changer la couleur de background du calendrier lorsqu'on clique sur un jour.
+                //$(this).css('background-color','lightblue'); Cette déclaration marche, mais la case reste bleue pour toujours et à jamais.
+                alert('Vous avez sélectionné le '+ date.format());
+                Session.set('selectedDay', date.format());
+            }
+    });
+  });
+  </script>
 </head>
 
 <body>
-  <h1>Two milkmen go comedy!</h1>
+  	<h1>Projet Proginter</h1>
 
-  {{> hello}}
+	{{> formulaireCalendrier}}<br>
+	{{> formulaireListe}}
 </body>
 
 <!-- Templates primaires-->
@@ -19,6 +37,8 @@
 
 <template name="formulaire">
 
+
+
 </template>
 
 <template name="evenement">
@@ -26,3 +46,25 @@
 </template>
 
 <!-- Templates secondaires-->
+
+<template name="formulaireCalendrier"><!--Template du calendrier sur le formulaire-->
+
+	<div id="calendar"></div>
+	<button class="renderer">Button</button>
+
+</template>
+
+<template name="formulaireListe"><!--Template de la liste d'objets du formulaire-->
+	{{#each Item}}
+		<li class="item {{selectedClass}}">{{name}}</li>
+	{{/each}}
+	<input type="button" class="remove" value="Enlever objet"><br>
+	Objet selectionné: {{showSelectedItem.name}};
+	
+	<form>
+        <input type="text" name="itemName" id='champNom'>
+        <input type="submit" value="Ajouter Objet">
+    </form>
+
+
+</template>
