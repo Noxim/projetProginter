@@ -1,4 +1,4 @@
 /* Oubliez pas de dire où vous vous servez des classes*/
-.selected{
+.selected{/*c'est la classe de l'objet sélectionné, quand on clique dessus*/
 	background-color:lightblue;
 }

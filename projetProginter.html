@@ -21,9 +21,11 @@
 
 <body>
   	<h1>Projet Proginter</h1>
+{{>formulaire}}
 
-	{{> formulaireCalendrier}}<br>
-	{{> formulaireListe}}
+<!-- attention, ce qui suit est un filler sans conséquence, juste pour me permettre de scroll down-->
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Lelles
+	
 </body>
 
 <!-- Templates primaires-->
@@ -37,7 +39,9 @@
 
 <template name="formulaire">
 
-
+{{> formulaireCalendrier}}<br>
+{{> formulaireListe}}<br>
+{{> formulaireBlocTexte}}
 
 </template>
 
@@ -50,21 +54,27 @@
 <template name="formulaireCalendrier"><!--Template du calendrier sur le formulaire-->
 
 	<div id="calendar"></div>
-	<button class="renderer">Button</button>
+	<input type="button" class="renderer" value="Session.get('selectedDay')">
 
 </template>
 
 <template name="formulaireListe"><!--Template de la liste d'objets du formulaire-->
-	{{#each Item}}
-		<li class="item {{selectedClass}}">{{name}}</li>
-	{{/each}}
-	<input type="button" class="remove" value="Enlever objet"><br>
-	Objet selectionné: {{showSelectedItem.name}};
+	<ul>
+		{{#each Item}}
+			<li class="item {{selectedClass}}">{{name}}</li>
+		{{/each}}
+	</ul>
+	Objet selectionné: {{showSelectedItem.name}}
 	
 	<form>
         <input type="text" name="itemName" id='champNom'>
         <input type="submit" value="Ajouter Objet">
+        <input type="button" class="remove" value="Enlever objet"><br>
     </form>
 
 
+</template>
+
+<template name="formulaireBlocTexte">
+	<textarea placeholder="Entrez votre message ici" id="blocTexte" rows="6" cols="50" maxlength=255></textarea>
 </template>
