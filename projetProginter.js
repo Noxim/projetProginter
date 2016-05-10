@@ -19,7 +19,7 @@ if (Meteor.isClient) {
   });
 //events
   Template.pageAccueil.events({
-    
+
   });
   Template.profil.events({
     
