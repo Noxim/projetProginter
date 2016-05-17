@@ -6,7 +6,9 @@ evenementsEnCours = new Mongo.Collection('event');
 if (Meteor.isClient) {
 //helpers
   Template.pageAccueil.helpers({
+  'click .createList': function(){
 
+  } //Base du code pour l'event du template "créer une liste"//
   });
   Template.profil.helpers({
     
