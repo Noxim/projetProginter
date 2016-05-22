@@ -14,7 +14,7 @@
   <div id="texteAccueil">Bienvenue sur [PH] ! Vous pouvez vous connecter ou simplement créer une liste.</div> <!-- Exemple de texte de bienvenue-->
   
   <div id="Lorem">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae iure sapiente incidunt quaerat similique nesciunt laborum maxime officiis alias, in assumenda ut aut labore, ea minima ipsum odio eaque magni. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum sapiente sed consequatur necessitatibus quod rem facilis, in, iste sunt! Voluptate quidem vel totam, fugiat necessitatibus. Deserunt recusandae quae, repellat laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur dignissimos possimus repellendus ea aliquid. Animi ut atque, dolores alias laboriosam tempora omnis assumenda repellat, dicta officia est architecto obcaecati cum!</div><!-- Texte d'essai-->
-
+{{>evenement}}
 </body>
 
 <!-- Templates primaires-->
@@ -31,79 +31,42 @@
 </template>
 
 <template name="evenement">
-<head>
-  <title>application</title>
-</head>
-
-<body>
 <div class="c1">
 <h1>$Nom de l'événement$</h1>
 <p>$Auteur$ vous invite à l'événement $événement$ qui se tiendra le $date$.</p>
 <p>Vous pouvez l'aider en apportant avec vous ce dont il a besoin. Indiquez ci-dessous ce que vous souhaitez amener.</p>
+
 <div class="c2">
- <h1>Liste</h1>
-<fieldset>
-<form>
-  <input type="radio" name="objet1" id="objet1" value="objet1" />
-  <label for="objet1">Choix Objet 1</label>
-
-  <select>
-   <option>1</option>
-   <option>2</option>
-   <option>3</option>
-   <option>4</option>
-  </select> <br />
-
-  <input type="radio" name="objet2" id="objet2" value="objet2" />
-  <label for="objet2">Choix Objet 2</label>
-
-    <select>
-   <option>1</option>
-   <option>2</option>
-   <option>3</option>
-   <option>4</option>
-  </select><br />
-
-  <input type="radio" name="objet3" id="objet3" value="objet3" />
-  <label for="objet3">Choix Objet 3</label>
-
-    <select>
-   <option>1</option>
-   <option>2</option>
-   <option>3</option>
-   <option>4</option>
-  </select><br />
-
-    <input type="radio" name="objet4" id="objet4" value="objet4" />
-  <label for="objet4">Choix Objet 4</label>
-
-    <select>
-   <option>1</option>
-   <option>2</option>
-   <option>3</option>
-   <option>4</option>
-  </select><br />
-</form>
-</fieldset>
+<h1>Liste</h1>
+<p>Veuillez choisir ce que vous souhaitez apporter.</p>
+{{#each afficherobjets}}
+<input type="button" class="choixobjet" value="{{nom}} ({{nombre}})"><br /> 
+{{/each}}
 </div>
-<div class="c3"><h1>Statistique</h1>
-<h2>Il manque encore</h2>
+
+<div class="c3">
+<h1>Il y a {{compter}}</h1>
 <ul>
-<li>3L de bière</li>
-<li>des sacisses</li>
-</ul> 
-<h2>Participants</h2>
-<ul>
-<li>Participant 1</li>
-<li>Participant 2</li>
-<li>Participant 3</li>
-</ul></div>
+{{#each afficherparticipants}}
+<li>{{participant}}</li>
+{{/each}}
+</ul>
+<p>Inscrivez votre nom pour confirmer :</p>
+
+{{>ajouterparticipant}}
+
+</div>
 
 <div class="clear"></div>
-<button>Confirmer</button>
-<div class="clear"></div>
+
 </div>
-</body>
 </template>
 
 <!-- Templates secondaires-->
+
+<template name="ajouterparticipant">/*utilisé dans la partie "événement"*/
+<form>
+<input type="text" name="participant">
+<input type="submit" value="Confirmer">
+</form>
+</template>
