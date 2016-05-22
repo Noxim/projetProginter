@@ -87,11 +87,12 @@ background-image: linear-gradient(top, #ffffff, #cad6d5);
 
 }
 .c2, .c3 {
-	width:325px;
+	width:360px;
 	border:solid 1px #E8E8E8 ;
 	-webkit-border-radius: 0px 0px 15px 15px;
 	border-radius: 0px 0px 15px 15px;
 	background-color:#EEE;
+	padding:15px;
 }
 .c2{
 	float:left;
@@ -108,21 +109,8 @@ fieldset{
 	padding:15px;
 }
 /*Boutons*/
-button {
-  -webkit-border-radius: 12;
-  -moz-border-radius: 12;
-  border-radius: 12px;
-  font-family: Arial;
-  color: #000000;
-  font-size: 16px;
-  background: #EEE;
-  padding: 10px 10px;
-  margin:20px 0px;
-  border: solid #000000 0px;
-
-}
-
-button:hover {
-  background:#e0e0e0;;
-  text-decoration: none;
+input[type="button"]{
+	width:330px;
+	height:35px;
+	margin:0px 0px 15px 15px;
 }
