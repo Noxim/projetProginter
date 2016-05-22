@@ -109,7 +109,7 @@ fieldset{
 	padding:15px;
 }
 /*Boutons*/
-input[type="button"]{
+input[type="button"].choixobjet{
 	width:330px;
 	height:35px;
 	margin:0px 0px 15px 15px;
