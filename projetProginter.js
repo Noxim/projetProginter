@@ -2,6 +2,7 @@
 itemList = new Mongo.Collection('items');
 archives = new Mongo.Collection('archives');
 evenementsEnCours = new Mongo.Collection('event');
+ListeParticipants = new Mongo.Collection('participants');
 
 if (Meteor.isClient) {
 //helpers
@@ -17,7 +18,18 @@ if (Meteor.isClient) {
     
   });
   Template.evenement.helpers({
-    
+  'afficherobjets': function(){
+  return ListeObjets.find();
+},
+  'afficherparticipants': function(){
+  return ListeParticipants.find();
+},
+  'compter' : function(){
+	var nombre = ListeParticipants.find().count();
+	if (nombre>0){return nombre+" participants";}
+	else {return nombre+" participant";}
+}
+});
   });
 //events
   Template.pageAccueil.events({
@@ -30,7 +42,17 @@ if (Meteor.isClient) {
     
   });
   Template.evenement.events({
-    
+  'click .choixobjet': function(){
+  /*Je veux que la case choisie disparaisse uniquement après avoir cliqué dessus ET avoir confirmé son nom*/
+},
+Template.ajouterparticipant.events({/*Le participant confirme avec son nom à l'événement dans ListeParticipants*/
+'submit form': function(ajout){
+ajout.preventDefault();
+var nomParticipant = ajout.target.participant.value;
+ListeParticipants.insert({
+participant: nomParticipant
+});
+}
   });
 }
 
