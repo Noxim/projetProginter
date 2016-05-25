@@ -98,14 +98,7 @@ if (Meteor.isClient) {
       Meteor.call('insertItemData', itemNameVar);
       document.getElementById('champNom').value='';
     },
-    'click .itemNumberIncrease': function(){
-      var selectedItem = Session.get('selectedItem');
-      Meteor.call('updateItemNumber', 1, selectedItem);
-    },
-    'click .itemNumberDecrease': function(){
-      var selectedItem = Session.get('selectedItem');
-      Meteor.call('updateItemNumber', -1, selectedItem);
-    },
+
     'submit .itemNumberForm': function(){
       event.preventDefault();
       var selectedItem = Session.get('selectedItem');
@@ -198,11 +191,11 @@ Meteor.methods({
       'removeAllItem': function(){ //cette methode semble ne pas fonctionner correctement. J'ai pas trouvé de moyen (même barbare) pour effacer toute les données de la liste sans effacer la liste elle-même
         var currentUserId = Meteor.userId();
         if(currentUserId){
-          itemList.remove({});
+          itemList.remove({}); //cette déclaration est sensée marcher. Elle ne marche pas
         }
       },
 
-      'loadArchiveData': function(archiveId){
+      'loadArchiveData': function(archiveId){//fonction qui extrait les données des archives et les charge dans la page courante
         var currentUserId = Meteor.userId();
         var savedArchive = archives.findOne({_id : archiveId})
         var savedArchiveItems = savedArchive.objets
