@@ -10,9 +10,9 @@
 
             dayClick: function(date,jsEvent,view) {
             	//Si vous vous emmerdez, trouvez le moyen de changer la couleur de background du calendrier lorsqu'on clique sur un jour.
-                //$(this).css('background-color','lightblue'); Cette déclaration marche, mais la case reste bleue pour toujours et à jamais.
-                alert('Vous avez sélectionné le '+ date.format());
+                (this).css('background-color','lightblue'); //Cette déclaration marche, mais la case reste bleue pour toujours et à jamais.
                 Session.set('selectedDay', date.format());
+                alert(Session.get("selectedDay"));
             }
     });
   });
@@ -21,7 +21,8 @@
 
 <body>
   	<h1>Projet Proginter</h1>
-{{>formulaire}}
+  {{>loginButtons}}<br>
+  {{>formulaire}}
 
 <!-- attention, ce qui suit est un filler sans conséquence, juste pour me permettre de scroll down-->
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Lelles
@@ -38,7 +39,7 @@
 </template>
 
 <template name="formulaire">
-
+{{> formulaireChargeur}}<br>
 {{> formulaireCalendrier}}<br>
 {{> formulaireListe}}<br>
 {{> formulaireBlocTexte}}
@@ -51,30 +52,42 @@
 
 <!-- Templates secondaires-->
 
+<template name="formulaireChargeur"><!--Template qui permet de charger un événement archivé-->
+"Archives disponibles:"
+  <ul>
+    {{#each archives}}
+      <li class="archive {{selectedClass}}">Événement du : {{date}}</li>
+    {{/each}}
+  </ul> 
+  <input type="button" class="chargeur" value="Charger cet événement">
+</template><!--fin formulaireChargeur-->
+
 <template name="formulaireCalendrier"><!--Template du calendrier sur le formulaire-->
 
 	<div id="calendar"></div>
-	<input type="button" class="renderer" value="Session.get('selectedDay')">
+	<!--<input type="button" class="eventCreator" value="Clickez ici pour valider la date">-->
 
 </template>
 
 <template name="formulaireListe"><!--Template de la liste d'objets du formulaire-->
 	<ul>
-		{{#each Item}}
-			<li class="item {{selectedClass}}">{{name}}</li>
+		{{#each items}}
+			<li class="item {{selectedClass}}">{{name}} : {{quantity}}</li>
 		{{/each}}
-	</ul>
-	Objet selectionné: {{showSelectedItem.name}}
-	
-	<form>
-        <input type="text" name="itemName" id='champNom'>
-        <input type="submit" value="Ajouter Objet">
-        <input type="button" class="remove" value="Enlever objet"><br>
-    </form>
+	</ul>	
+	<form class='itemNameForm'>
+    <input type="text" name="itemName" id='champNom'>
+    <input type="submit" value="Ajouter Objet">
+    <input type="button" class="remove" value="Enlever objet">
+  </form>
+  <form class="itemNumberForm">
+    <input type='number' name='itemNumber' placeholder=1 min=1>
+    <input type='submit' value='Modifier Quantité'>
+  </form>
+</template><!--fin formulaireListe-->
 
-
-</template>
-
-<template name="formulaireBlocTexte">
-	<textarea placeholder="Entrez votre message ici" id="blocTexte" rows="6" cols="50" maxlength=255></textarea>
-</template>
+<template name="formulaireBlocTexte"><!--ce template contiens les éléments de confirmation et le bloc de message-->
+	<textarea placeholder="Entrez votre message ici, max 255 caractères" id="blocTexte" rows="6" cols="50" maxlength=255></textarea>
+	<input type="button" class="eventValid" value="Confirmer événement">
+  <input type="button" class="eventSave" value="Archiver l'événement">
+</template><!--fin formulaireBlocTexte-->
