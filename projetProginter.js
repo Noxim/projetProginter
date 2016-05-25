@@ -73,7 +73,12 @@ if (Meteor.isClient) {
     'click .chargeur' :  function(){
       var archiveVar = Session.get('selectedArchive')
       Meteor.call('loadArchiveData', archiveVar);
-    }
+      Meteor.call('insertArchivedItem', archiveVar)
+    },
+    'click .remove' : function(){
+      var selectedArchive = Session.get('selectedArchive');
+        Meteor.call("removeArchive", selectedArchive);
+      },
   });
   Template.formulaireCalendrier.events({
       'click .eventCreator' : function(){
@@ -94,8 +99,9 @@ if (Meteor.isClient) {
       },
     'submit .itemNameForm': function(){
       event.preventDefault();
+      var currentUserId = Meteor.userId();
       var itemNameVar = event.target.itemName.value;
-      Meteor.call('insertItemData', itemNameVar);
+      Meteor.call('insertItemData', itemNameVar, 1, currentUserId);
       document.getElementById('champNom').value='';
     },
 
@@ -131,14 +137,14 @@ if (Meteor.isServer) {
 }
 //methodes
 Meteor.methods({
-    'insertItemData': function(itemNameVar){
+    'insertItemData': function(itemNameVar, quantityNo, userId){
         check(itemNameVar, String);
         var currentUserId = Meteor.userId();
         if(currentUserId){
           itemList.insert({
             name: itemNameVar,
-            quantity: 1,
-            createdBy: currentUserId
+            quantity: quantityNo,
+            createdBy: userId
         })
       }
     },
@@ -147,6 +153,14 @@ Meteor.methods({
       var currentUserId = Meteor.userId();
       if(currentUserId){
         itemList.remove({_id: selectedItem, createdBy: currentUserId});
+      }
+      
+    },
+    'removeArchive': function(selectedArchive){
+      check(selectedArchive, String);
+      var currentUserId = Meteor.userId();
+      if(currentUserId){
+        archives.remove({_id: selectedArchive, createdBy: currentUserId});
       }
       
     },
@@ -160,10 +174,10 @@ Meteor.methods({
             objets: itemList.find({createdBy:currentUserId}).fetch(),
             message: messageValue
           })
-          alert("Validé, si vous le souhaitez, vous pouvez cliquer sur le bouton à côté pour enregistrer définitivement l'événement");
-         // Meteor.call('removeAllItem')
+         // alert("Validé");
+          Meteor.call('removeAllItem')
         }else{
-          alert("!! Données incorrectes !! Verifiez que vous avez bien séléctionné une date!")
+          //alert("!! Données incorrectes !! Verifiez que vous avez bien séléctionné une date!")
         }
       },
       'archiveEventData': function (messageValue, date){
@@ -176,9 +190,9 @@ Meteor.methods({
             objets: itemList.find({createdBy:currentUserId}).fetch(),
             message: messageValue
           })
-          alert("Votre événement a bien été archivé.");
+         // alert("Votre événement a bien été archivé.");
         }else{
-          alert("!! Données incorrectes !! Verifiez que vous avez bien séléectionné une date!")
+         // alert("!! Données incorrectes !! Verifiez que vous avez bien séléectionné une date!")
         }
       },
       'updateItemNumber': function(itemNumberVar, selectedItem){
@@ -191,25 +205,28 @@ Meteor.methods({
       'removeAllItem': function(){ //cette methode semble ne pas fonctionner correctement. J'ai pas trouvé de moyen (même barbare) pour effacer toute les données de la liste sans effacer la liste elle-même
         var currentUserId = Meteor.userId();
         if(currentUserId){
-          itemList.remove({}); //cette déclaration est sensée marcher. Elle ne marche pas
+          itemList.remove({});
         }
+      },
+      'insertArchivedItem': function(archiveId){
+        var savedArchive = archives.findOne({_id : archiveId})
+        var savedArchiveItems = savedArchive.objets
+         for(var i = 0; i < savedArchiveItems.length; i++){
+            Meteor.call('insertItemData', savedArchiveItems[i].name, savedArchiveItems[i].quantity, savedArchiveItems[i].createdBy)
+          }
       },
 
       'loadArchiveData': function(archiveId){//fonction qui extrait les données des archives et les charge dans la page courante
         var currentUserId = Meteor.userId();
         var savedArchive = archives.findOne({_id : archiveId})
-        var savedArchiveItems = savedArchive.objets
+
         if(currentUserId){
           Session.set('selectedDay', savedArchive.date);
-          document.getElementById('blocTexte').value = savedArchive.message;
-          for(var i = 0; i < savedArchiveItems.length; i++){
-            itemList.insert({
-               name: savedArchiveItems[i].name,
-               quantity :savedArchiveItems[i].quantity,
-               createdBy : savedArchiveItems[i].createdBy
-            })
-          }
+          alert(Session.get('selectedDay'))
+          document.getElementById('blocTexte').value = savedArchive.message;  
         }
+        //Meteor.call('insertArchivedItem', savedArchiveItems)
       }
     
 });
+

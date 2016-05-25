@@ -60,6 +60,7 @@
     {{/each}}
   </ul> 
   <input type="button" class="chargeur" value="Charger cet événement">
+  <input type="button" class="remove" value="Supprimer archive">
 </template><!--fin formulaireChargeur-->
 
 <template name="formulaireCalendrier"><!--Template du calendrier sur le formulaire-->
@@ -88,6 +89,6 @@
 
 <template name="formulaireBlocTexte"><!--ce template contiens les éléments de confirmation et le bloc de message-->
 	<textarea placeholder="Entrez votre message ici, max 255 caractères" id="blocTexte" rows="6" cols="50" maxlength=255></textarea>
-	<input type="button" class="eventValid" value="Confirmer événement">
+	<input type="button" class="eventValid" value="Confirmer événement /!\, la liste d'objet sera effacée/!\">
   <input type="button" class="eventSave" value="Archiver l'événement">
 </template><!--fin formulaireBlocTexte-->
