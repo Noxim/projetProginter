@@ -202,7 +202,7 @@ Meteor.methods({
                    {$set: {quantity: itemNumberVar} })
        }
       },
-      'removeAllItem': function(){ //cette methode semble ne pas fonctionner correctement. J'ai pas trouvé de moyen (même barbare) pour effacer toute les données de la liste sans effacer la liste elle-même
+      'removeAllItem': function(){
         var currentUserId = Meteor.userId();
         if(currentUserId){
           itemList.remove({});
@@ -225,7 +225,6 @@ Meteor.methods({
           alert(Session.get('selectedDay'))
           document.getElementById('blocTexte').value = savedArchive.message;  
         }
-        //Meteor.call('insertArchivedItem', savedArchiveItems)
       }
     
 });
