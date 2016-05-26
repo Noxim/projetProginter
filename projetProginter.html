@@ -51,16 +51,16 @@
 		<h2>Evénemnents en cours</h2>
 		{{#each event}}
 			<li class="evenementsCours">
-				{{name}} - {{day}}-{{month}}-{{year}}
+				{{name}} - {{date}}
 				<input type="button" class="goEvent" value="Aller sur la page de l'événement">
 			</li>
 		{{/each}}
 	</div>
 	
-	<div class="pastEvents">
-		<h2>Evénements passés</h2>
-		{{#each past}}
-			<li class="evenementsPasses">
+	<div class="archivedEvents">
+		<h2>Evénements archivés</h2>
+		{{#each archives}}
+			<li class="evenementsArchives">
 				{{name}} - {{date}}
 			</li>
 		{{/each}}

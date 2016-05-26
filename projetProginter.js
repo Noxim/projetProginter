@@ -1,11 +1,12 @@
-/* PACKAGE USED
+/* PACKAGES USED
   accounts-ui
   accounts-password
 */
-ItemList = new Mongo.Collection('items');
-EvenementsPasses = new Mongo.Collection('past');
-EvenementsEnCours = new Mongo.Collection('event');
-ContactsList = new Mongo.Collection('contacts');
+
+itemList = new Mongo.Collection('items');
+archives = new Mongo.Collection('archives');
+evenementsEnCours = new Mongo.Collection('event');
+contactsList = new Mongo.Collection('contacts');
 
 if (Meteor.isClient) {
   Meteor.subscribe('theCurrentEvents');
@@ -16,16 +17,18 @@ if (Meteor.isClient) {
     // fonction pour afficher la liste des contacts, triés alphabétiquement
     'contacts': function(){
       var currentUserId = Meteor.userId();
-      return ContactsList.find({}, {sort: {name: 1} });
+      return contactsList.find({}, {sort: {name: 1} });
     },
     // fonction pour afficher la liste des événements en cours, triés du plus ancien au plus récent, puis alphabétiquement
     'event': function(){
-      return EvenementsEnCours.find({}, {sort: {year: 1, month: 1, day: 1, name: 1}});
+      var currentUserId = Meteor.userId();
+      return evenementsEnCours.find({createdBy: currentUserId}, {sort: {date:1, name: 1}});
     },
 
     // fonction pour afficher la liste des événements archivés, triés du plus récent au plus ancien, puis alphabétiquement
-    'past': function(){
-      return EvenementsPasses.find({}, {sort: {year: -1, month: -1, day: -1, name: 1}});
+    'archives': function(){
+      var currentUserId = Meteor.userId();
+      return archives.find({createdBy: currentUserId}, {sort: {date:1, name: 1}});
     },
 
     // fonction pour mettre en évidence le contact sélectionné pour la modification
@@ -40,7 +43,7 @@ if (Meteor.isClient) {
     // fonction pour montrer le champ de modification d'un contact
     'showEditContact':function(){
       var selectedContactVar = Session.get('selectedContact');
-      return ContactsList.findOne(selectedContactVar);
+      return contactsList.findOne(selectedContactVar);
     },
 
     // fonction pour montrer/cacher la page de profil
@@ -129,7 +132,7 @@ if (Meteor.isClient) {
     // fonction lors du click sur "aller sur la page de l'événement"
     'click .goEvent': function(){
       var eventId = this._id;
-      var dateUnsorted = EvenementsEnCours.findOne({_id:eventId}).date;
+      var dateUnsorted = evenementsEnCours.findOne({_id:eventId}).date;
       Meteor.call('sortDate', eventId, dateUnsorted);
     }
   })
@@ -138,19 +141,19 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.publish('theCurrentEvents', function(){
     var currentUserId = this.userId;
-    return EvenementsEnCours.find({createdBy:currentUserId})
+    return evenementsEnCours.find({createdBy:currentUserId})
   });
 
   Meteor.publish('theContacts', function(){
     var currentUserId = this.userId;
-    return ContactsList.find({createdBy:currentUserId})
+    return contactsList.find({createdBy:currentUserId})
   });
 
   Meteor.methods({
     // fonction pour insérer un contact dans la liste de contacts
     'insertContactData': function(nomContactVar, emailContactVar){
       var currentUserId = Meteor.userId();
-      ContactsList.insert({
+      contactsList.insert({
         name: nomContactVar,
         email: emailContactVar,
         createdBy: currentUserId
@@ -160,7 +163,7 @@ if (Meteor.isServer) {
     // fonction pour modifier un contact de la liste de contacts
     'editContactData': function(selectedContact, editNomContactVar, editEmailContactVar){
       var currentUserId = Meteor.userId();
-      ContactsList.update({
+      contactsList.update({
         _id: selectedContact,
         createdBy: currentUserId},
         {name: editNomContactVar,
@@ -171,7 +174,7 @@ if (Meteor.isServer) {
     // fonction pour supprimer un contact de la liste de contacts
     'removeContactData': function(contactId){
       var currentUserId = Meteor.userId();
-      ContactsList.remove({
+      contactsList.remove({
         _id: contactId,
         createdBy: currentUserId
       })
@@ -180,7 +183,7 @@ if (Meteor.isServer) {
     // fonction pour séparer la date (YYYY-MM-DD) en champs séparés DD, MM et YYYY dans le document
     'sortDate':function(eventId, dateUnsorted){
       var currentUserId = Meteor.userId();
-      EvenementsEnCours.update({
+      evenementsEnCours.update({
         _id: eventId,
         createdBy: currentUserId},
         {$set: {day: dateUnsorted.slice(8),
