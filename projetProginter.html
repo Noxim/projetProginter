@@ -4,25 +4,75 @@
 
 <body>
   <h1>Two milkmen go comedy!</h1>
-
-  {{> hello}}
+  {{> loginButtons}}
+  {{>profil}}
 </body>
 
 <!-- Templates primaires-->
 <template name="pageAccueil">
-
 </template>
 
 <template name="profil">
+	<input type="button" class="showProfilePage" value="{{valueProfileButton}}">
+	<div class="{{visibleProfilePage}}">
+	
+	<input type="button" class="createEvent" value="Créer un événement">
 
+	<div class="ajouterContact">
+		<h2>Ajouter un contact</h2>
+		<form class="addContactForm">
+			<input type="text" name="nomContact" placeholder="Entrer le nom">
+			<input type="text" name="emailContact" placeholder="Entrer un email">
+			<input type="submit" value="Ajouter">
+		</form>
+	</div>
+
+	<div class="listeContacts">
+		<h2>Contacts</h2>
+		{{#each contacts}}
+			<li class="contact {{selectedContactClass}}">
+				{{name}} - {{email}}
+				<input type="button" class="editContact" value="Modifier le contact">
+				<input type="button" class="deleteContact" value="Supprimer le contact">
+			</li>
+		{{/each}}
+
+		{{#if showEditContact}}
+			<form class="editContactForm">
+				<input type="text" name="editNomContact" placeholder="Entrer le nom">
+				<input type="text" name="editEmailContact" placeholder="Entrer un email">
+				<input type="submit" value="Modifier">
+				<input type="button" class="closeEdit" value="Annuler">
+			</form>
+		{{/if}}
+	</div>
+
+	<div class="currentEvents">
+		<h2>Evénemnents en cours</h2>
+		{{#each event}}
+			<li class="evenementsCours">
+				{{name}} - {{day}}-{{month}}-{{year}}
+				<input type="button" class="goEvent" value="Aller sur la page de l'événement">
+			</li>
+		{{/each}}
+	</div>
+	
+	<div class="pastEvents">
+		<h2>Evénements passés</h2>
+		{{#each past}}
+			<li class="evenementsPasses">
+				{{name}} - {{date}}
+			</li>
+		{{/each}}
+	</div>
+
+	</div>
 </template>
 
 <template name="formulaire">
-
 </template>
 
 <template name="evenement">
-
 </template>
 
-<!-- Templates secondaires-->
+<!--Templates secondaires-->

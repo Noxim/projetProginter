@@ -1,74 +1,7 @@
-/* Oubliez pas de dire où vous vous servez des classes*/
-
-/*Général*/
-
-body{
-	padding:15px;
-	font-family:arial;
-	color:#505050;
-}
-h1, h2 {
-	padding-bottom:25px;
-	font-size:20px;
-	text-align:center;
-}
-h2{
-	font-size:16px;
+.selected{
+	font-weight: bold;
 }
 
-/*Conteneurs*/
-
-.c1 {
-	width:800px;
-	padding:25px;
-	margin:auto;
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#cad6d5');
--ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#cad6d5')";
-background-image: -moz-linear-gradient(top, #ffffff, #cad6d5);
-background-image: -ms-linear-gradient(top, #ffffff, #cad6d5);
-background-image: -o-linear-gradient(top, #ffffff, #cad6d5);
-background-image: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#cad6d5));
-background-image: -webkit-linear-gradient(top, #ffffff, #cad6d5);
-background-image: linear-gradient(top, #ffffff, #cad6d5);
-
-}
-.c2, .c3 {
-	width:325px;
-	border:solid 1px #E8E8E8 ;
-	-webkit-border-radius: 0px 0px 15px 15px;
-	border-radius: 0px 0px 15px 15px;
-	background-color:#EEE;
-}
-.c2{
-	float:left;
-}
-.c3, select, button{
-	float:right;
-}
-.clear {
-  clear: both;
-}
-
-/*Formulaires*/
-fieldset{
-	padding:15px;
-}
-/*Boutons*/
-button {
-  -webkit-border-radius: 12;
-  -moz-border-radius: 12;
-  border-radius: 12px;
-  font-family: Arial;
-  color: #000000;
-  font-size: 16px;
-  background: #EEE;
-  padding: 10px 10px;
-  margin:20px 0px;
-  border: solid #000000 0px;
-
-}
-
-button:hover {
-  background:#e0e0e0;;
-  text-decoration: none;
+.hideProfile{
+	display: none;
 }
