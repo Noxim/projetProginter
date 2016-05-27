@@ -14,6 +14,12 @@ if (Meteor.isClient) {
     
   });
   Template.formulaire.helpers({
+
+    'isActive': function(){
+      if (Session.get('activePage')=="formulaire"){
+        return true;
+      }
+    }
     
   });
   Template.evenement.helpers({
@@ -53,6 +59,12 @@ if (Meteor.isClient) {
  
 
 //events
+  Template.body.events({
+    'click .apparitionFormulaire': function(){
+      Meteor.call('changePage','formulaire')
+    }
+  });
+
   Template.pageAccueil.events({
 
   });
@@ -117,7 +129,10 @@ if (Meteor.isClient) {
     'click .eventValid' : function(){
       var messageValue=document.getElementById("blocTexte").value;
       var date = Session.get('selectedDay');
-      Meteor.call("createEventData", messageValue, date);
+      if(confirm('Avez vous bien fini de concevoir votre événement?')){
+        Meteor.call("createEventData", messageValue, date);
+        Meteor.call('changePage','evenement');
+      }
     },
     'click .eventSave' : function(){
       var messageValue=document.getElementById("blocTexte").value;
@@ -137,6 +152,16 @@ if (Meteor.isServer) {
 }
 //methodes
 Meteor.methods({
+    'changePage': function(pageArrivee){//hésitez pas a rajouter des cas si vous en avez besoin. Normalement, ça devrait marcher pour tout ce que vous avez crée personnelement, mais ça risque de bugger si vous affichez un truc complexe issu d'un package.
+      if(pageArrivee=='formulaire'){
+        Session.set('activePage','formulaire');
+        document.getElementById('calendar').style.display =""
+      }else{
+        Session.set('activePage',pageArrivee)
+        document.getElementById('calendar').style.display='none'
+      }
+    },
+
     'insertItemData': function(itemNameVar, quantityNo, userId){
         check(itemNameVar, String);
         var currentUserId = Meteor.userId();

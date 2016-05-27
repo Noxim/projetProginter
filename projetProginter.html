@@ -22,7 +22,11 @@
 <body>
   	<h1>Projet Proginter</h1>
   {{>loginButtons}}<br>
-  {{>formulaire}}
+  <div id="calendar" style="display:none"></div><!--il doit absolument reser ici et initialisé, peu importe ce que vous faites. Utilisez la methode changePage pour passer d'une page a l'autre. Si vous mettez l'argument 'formulaire', le style va devenir "null" et le calendrier apparaîtra.-->
+  {{> pageAccueil}}
+  {{> formulaire}}
+
+
 
 <!-- attention, ce qui suit est un filler sans conséquence, juste pour me permettre de scroll down-->
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Lelles
@@ -31,7 +35,7 @@
 
 <!-- Templates primaires-->
 <template name="pageAccueil">
-
+  <input type="button" class="apparitionFormulaire" value="Faire apparaître le formulaire">
 </template>
 
 <template name="profil">
@@ -39,10 +43,12 @@
 </template>
 
 <template name="formulaire">
-{{> formulaireChargeur}}<br>
-{{> formulaireCalendrier}}<br>
-{{> formulaireListe}}<br>
-{{> formulaireBlocTexte}}
+{{# if isActive}}
+  {{> formulaireChargeur}}<br>
+  {{> formulaireCalendrier}}<br>
+  {{> formulaireListe}}<br>
+  {{> formulaireBlocTexte}}
+{{/if}}
 
 </template>
 
@@ -66,9 +72,8 @@
 <template name="formulaireCalendrier"><!--Template du calendrier sur le formulaire-->
 
 	<div id="calendar"></div>
-	<!--<input type="button" class="eventCreator" value="Clickez ici pour valider la date">-->
 
-</template>
+</template><!--fin formulaireCalendrier-->
 
 <template name="formulaireListe"><!--Template de la liste d'objets du formulaire-->
 	<ul>
