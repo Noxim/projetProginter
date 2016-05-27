@@ -1,5 +1,6 @@
 
 itemList = new Mongo.Collection('items');
+inviteList = new Mongo.Collection('invites')
 archives = new Mongo.Collection('archives');
 evenementsEnCours = new Mongo.Collection('event');
 
@@ -39,9 +40,7 @@ if (Meteor.isClient) {
         }
     }
   })
-  Template.formulaireCalendrier.helpers({
 
-  });
 
   Template.formulaireListe.helpers({
     'items' : function (){
@@ -52,6 +51,20 @@ if (Meteor.isClient) {
       var itemId = this._id;
         var selectedItem = Session.get('selectedItem');
         if(itemId == selectedItem){
+            return "selected";
+        }
+    }
+  })
+
+  Template.formulaireInvite.helpers({
+    'invites' : function (){
+      var currentUserId = Meteor.userId();
+      return inviteList.find({createdBy: currentUserId}, { sort : {name : 1} });
+    },
+    'selectedClass': function(){
+      var inviteId = this._id;
+        var selectedInvite = Session.get('selectedInvite');
+        if(inviteId == selectedInvite){
             return "selected";
         }
     }
@@ -85,21 +98,15 @@ if (Meteor.isClient) {
     'click .chargeur' :  function(){
       var archiveVar = Session.get('selectedArchive')
       Meteor.call('loadArchiveData', archiveVar);
-      Meteor.call('insertArchivedItem', archiveVar)
+      Meteor.call('insertArchivedItem', archiveVar);
+      Meteor.call('insertArchivedInvite', archiveVar);
     },
     'click .remove' : function(){
       var selectedArchive = Session.get('selectedArchive');
         Meteor.call("removeArchive", selectedArchive);
       },
   });
-  Template.formulaireCalendrier.events({
-      'click .eventCreator' : function(){
-        var currentUserId = Meteor.userId();
-        if(currentUserId){
-          Meteor.call('createEventData');
-        }
-      }      
-  });
+
   Template.formulaireListe.events({
     'click .item' : function (){
       var itemId = this._id;
@@ -114,7 +121,7 @@ if (Meteor.isClient) {
       var currentUserId = Meteor.userId();
       var itemNameVar = event.target.itemName.value;
       Meteor.call('insertItemData', itemNameVar, 1, currentUserId);
-      document.getElementById('champNom').value='';
+      document.getElementById('champNomItem').value='';
     },
 
     'submit .itemNumberForm': function(){
@@ -122,6 +129,25 @@ if (Meteor.isClient) {
       var selectedItem = Session.get('selectedItem');
       var itemNumberVar = event.target.itemNumber.value;
       Meteor.call('updateItemNumber', itemNumberVar, selectedItem);
+    }
+
+  });
+
+    Template.formulaireInvite.events({
+    'click .invite' : function (){
+      var inviteId = this._id;
+      Session.set('selectedInvite',inviteId);
+    },
+    'click .remove' : function(){
+      var selectedInvite = Session.get('selectedInvite');
+        Meteor.call("removeInvite", selectedInvite);
+      },
+    'submit .inviteNameForm': function(){
+      event.preventDefault();
+      var currentUserId = Meteor.userId();
+      var inviteNameVar = event.target.inviteName.value;
+      Meteor.call('insertInviteData', inviteNameVar, currentUserId);
+      document.getElementById('champNomInvite').value='';
     }
 
   });
@@ -173,13 +199,29 @@ Meteor.methods({
         })
       }
     },
+    'insertInviteData': function(inviteNameVar, userId){
+        check(inviteNameVar, String);
+        var currentUserId = Meteor.userId();
+        if(currentUserId){
+          inviteList.insert({
+            name: inviteNameVar,
+            createdBy: userId
+        })
+      }
+    },
     'removeItem': function(selectedItem){
       check(selectedItem, String);
       var currentUserId = Meteor.userId();
       if(currentUserId){
         itemList.remove({_id: selectedItem, createdBy: currentUserId});
       }
-      
+    },
+    'removeInvite': function(selectedInvite){
+      check(selectedInvite, String);
+      var currentUserId = Meteor.userId();
+      if(currentUserId){
+        inviteList.remove({_id: selectedInvite, createdBy: currentUserId});
+      }    
     },
     'removeArchive': function(selectedArchive){
       check(selectedArchive, String);
@@ -197,10 +239,12 @@ Meteor.methods({
             date: date,
             createdBy: currentUserId,
             objets: itemList.find({createdBy:currentUserId}).fetch(),
+            invites: inviteList.find({createdBy:currentUserId}).fetch(),
             message: messageValue
           })
          // alert("Validé");
-          Meteor.call('removeAllItem')
+          Meteor.call('removeAllItems');
+          Meteor.call('removeAllInvites');
         }else{
           //alert("!! Données incorrectes !! Verifiez que vous avez bien séléctionné une date!")
         }
@@ -213,6 +257,7 @@ Meteor.methods({
             date: date,
             createdBy: currentUserId,
             objets: itemList.find({createdBy:currentUserId}).fetch(),
+            invites: inviteList.find({createdBy:currentUserId}).fetch(),
             message: messageValue
           })
          // alert("Votre événement a bien été archivé.");
@@ -227,10 +272,16 @@ Meteor.methods({
                    {$set: {quantity: itemNumberVar} })
        }
       },
-      'removeAllItem': function(){
+      'removeAllItems': function(){
         var currentUserId = Meteor.userId();
         if(currentUserId){
           itemList.remove({});
+        }
+      },
+      'removeAllInvites': function(){
+        var currentUserId = Meteor.userId();
+        if(currentUserId){
+          inviteList.remove({});
         }
       },
       'insertArchivedItem': function(archiveId){
@@ -240,6 +291,14 @@ Meteor.methods({
             Meteor.call('insertItemData', savedArchiveItems[i].name, savedArchiveItems[i].quantity, savedArchiveItems[i].createdBy)
           }
       },
+      'insertArchivedInvite': function(archiveId){
+        var savedArchive = archives.findOne({_id : archiveId})
+        var savedArchiveInvite = savedArchive.invites
+         for(var i = 0; i < savedArchiveInvite.length; i++){
+            Meteor.call('insertInviteData', savedArchiveInvite[i].name, savedArchiveInvite[i].createdBy)
+          }
+      },
+
 
       'loadArchiveData': function(archiveId){//fonction qui extrait les données des archives et les charge dans la page courante
         var currentUserId = Meteor.userId();

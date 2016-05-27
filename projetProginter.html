@@ -45,8 +45,8 @@
 <template name="formulaire">
 {{# if isActive}}
   {{> formulaireChargeur}}<br>
-  {{> formulaireCalendrier}}<br>
   {{> formulaireListe}}<br>
+  {{> formulaireInvite}}<br>
   {{> formulaireBlocTexte}}
 {{/if}}
 
@@ -69,11 +69,6 @@
   <input type="button" class="remove" value="Supprimer archive">
 </template><!--fin formulaireChargeur-->
 
-<template name="formulaireCalendrier"><!--Template du calendrier sur le formulaire-->
-
-	<div id="calendar"></div>
-
-</template><!--fin formulaireCalendrier-->
 
 <template name="formulaireListe"><!--Template de la liste d'objets du formulaire-->
 	<ul>
@@ -82,7 +77,7 @@
 		{{/each}}
 	</ul>	
 	<form class='itemNameForm'>
-    <input type="text" name="itemName" id='champNom'>
+    <input type="text" name="itemName" id='champNomItem'>
     <input type="submit" value="Ajouter Objet">
     <input type="button" class="remove" value="Enlever objet">
   </form>
@@ -91,6 +86,19 @@
     <input type='submit' value='Modifier Quantité'>
   </form>
 </template><!--fin formulaireListe-->
+
+<template name="formulaireInvite">
+  <ul>
+    {{#each invites}}
+      <li class="invite {{selectedClass}}">{{name}}</li>
+    {{/each}}
+  </ul> 
+  <form class='inviteNameForm'>
+    <input type="text" name="inviteName" id='champNomInvite'>
+    <input type="submit" value="Ajouter invité">
+    <input type="button" class="remove" value="Enlever invité">
+  </form>
+</template>
 
 <template name="formulaireBlocTexte"><!--ce template contiens les éléments de confirmation et le bloc de message-->
 	<textarea placeholder="Entrez votre message ici, max 255 caractères" id="blocTexte" rows="6" cols="50" maxlength=255></textarea>
