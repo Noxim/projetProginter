@@ -309,6 +309,15 @@ Meteor.methods({
           alert(Session.get('selectedDay'))
           document.getElementById('blocTexte').value = savedArchive.message;  
         }
+      },
+
+      'sendMail':function(to, text){
+        Email.send({
+          to: to,
+          from: userMail,
+          subject: 'Invitation à un événement [ph]',
+          text: text
+        })
       }
     
 });
