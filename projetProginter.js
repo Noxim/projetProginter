@@ -85,6 +85,12 @@ if (Meteor.isClient) {
     
   });
   Template.formulaire.events({
+    'submit .nomFormulaireForm': function(){
+      event.preventDefault();
+      var eventNameVar = event.target.eventName.value;
+      Session.set('eventNameSession', eventNameVar);
+      alert(Session.get('eventNameSession'));
+    }
     
   });
   Template.evenement.events({
@@ -155,15 +161,17 @@ if (Meteor.isClient) {
     'click .eventValid' : function(){
       var messageValue=document.getElementById("blocTexte").value;
       var date = Session.get('selectedDay');
+      var name = Session.get('eventNameSession');
       if(confirm('Avez vous bien fini de concevoir votre événement?')){
-        Meteor.call("createEventData", messageValue, date);
+        Meteor.call("createEventData", messageValue, date, name);
         Meteor.call('changePage','evenement');
       }
     },
     'click .eventSave' : function(){
       var messageValue=document.getElementById("blocTexte").value;
       var date = Session.get('selectedDay');
-      Meteor.call("archiveEventData", messageValue, date);
+      var name = Session.get('eventNameSession');
+      Meteor.call("archiveEventData", messageValue, date, name);
     }
 
   })
@@ -231,12 +239,13 @@ Meteor.methods({
       }
       
     },
-    'createEventData': function(messageValue, date){
+    'createEventData': function(messageValue, date, eventName){
       check(messageValue, String);
       var currentUserId = Meteor.userId();
         if(currentUserId && date){
           evenementsEnCours.insert({
             date: date,
+            name: eventName,
             createdBy: currentUserId,
             objets: itemList.find({createdBy:currentUserId}).fetch(),
             invites: inviteList.find({createdBy:currentUserId}).fetch(),
@@ -249,12 +258,13 @@ Meteor.methods({
           //alert("!! Données incorrectes !! Verifiez que vous avez bien séléctionné une date!")
         }
       },
-      'archiveEventData': function (messageValue, date){
+      'archiveEventData': function (messageValue, date, eventName){
       check(messageValue, String);
       var currentUserId = Meteor.userId();
-        if(currentUserId && date){
+        if(currentUserId && date && eventNameSession){
          archives.insert({
             date: date,
+            name: eventName,
             createdBy: currentUserId,
             objets: itemList.find({createdBy:currentUserId}).fetch(),
             invites: inviteList.find({createdBy:currentUserId}).fetch(),
