@@ -1,0 +1,32 @@
+body{
+	font-family: Arial;
+}
+
+.login{
+	text-align: right;
+}
+
+#bouton{
+	padding: 5px 10px;
+	margin-bottom: 20px;
+}
+
+li{
+	list-style-type: none;
+}
+
+.selectedContact{
+	font-weight: bold;
+}
+
+.selectedFormulaire{
+	font-weight:bold;
+}
+
+#calendar{
+
+}
+
+.hidePage{
+	display: none;
+}

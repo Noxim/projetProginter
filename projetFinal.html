@@ -1,0 +1,166 @@
+<head>
+  <title>projetProginter</title>
+  <script>
+	//script d'initialisation du calendrier. Il DOIT être ici d'après le tuto
+ 	$(document).ready(function() {
+ 		$('#calendar').fullCalendar({
+ 			aspectratio: 200,
+      		height: 'auto',
+      		contentheight:25,
+
+            dayClick: function(date,jsEvent,view) {
+            	(this).css('background-color','lightblue');
+                var selectedDayVar = date.format();
+                Session.set('selectedDay', selectedDayVar);
+                alert(selectedDayVar);
+            }
+    	});
+  	});
+  </script>
+</head>
+
+<body>
+  <h1>Projet Proginter</h1>
+  <div class="login">{{> loginButtons}} </div>
+  {{> profil}} <br>
+  {{> formulaire}}
+</body>
+
+<!-- Templates primaires-->
+<template name="pageAccueil">
+</template>
+
+<template name="profil">
+	<input type="button" class="showProfilePage" id="bouton" value="{{valueProfileButton}}">
+	<div class="{{visibleProfilePage}}">
+	
+	<input type="button" class="createEventFromProfil" id="bouton" value="Créer un événement">
+	
+	<div class="currentEvents">
+		<h3>Evénemnents en cours</h3>
+		{{#each eventProfil}}
+			<li class="evenementsCours">
+				{{name}} - {{date}}
+				<input type="button" class="goEvent" id="bouton" value="Aller sur la page de l'événement">
+			</li>
+		{{/each}}
+	</div>
+	
+	<div class="archivedEvents">
+		<h3>Evénements sauvegardés</h3>
+		{{#each archivesProfil}}
+			<li class="evenementsArchives">
+				{{name}} - {{date}}
+			</li>
+		{{/each}}
+	</div>
+
+	<div class="ajouterContact">
+		<h3>Ajouter un contact</h3>
+		<form class="addContactForm">
+			<input type="text" name="nomContact" placeholder="Entrer le nom">
+			<input type="text" name="emailContact" placeholder="Entrer un email">
+			<input type="submit" id="bouton" value="Ajouter">
+		</form>
+	</div>
+
+	<div class="listeContacts">
+		<h3>Contacts</h3>
+		{{#each contactsProfil}}
+			<li class="contactProfil {{selectedContactClass}}">
+				{{name}} - {{email}}
+				<input type="button" class="editContact" id="bouton" value="Modifier le contact">
+				<input type="button" class="deleteContact" id="bouton" value="Supprimer le contact">
+			</li>
+		{{/each}}
+
+		{{#if showEditContact}}
+			<form class="editContactForm">
+				<input type="text" name="editNomContact" placeholder="Entrer le nom">
+				<input type="text" name="editEmailContact" placeholder="Entrer un email">
+				<input type="submit" id="bouton" value="Modifier">
+				<input type="button" class="closeEdit" id="bouton" value="Annuler">
+			</form>
+		{{/if}}
+	</div>
+	
+	</div>
+</template>
+
+<template name="formulaire">
+	<input type="button" class="showFormulairePage" id="bouton" value="{{valueFormulaireButton}}">
+	<div class="{{visibleFormulairePage}}">
+		<form class="nomFormulaireForm">
+    		<input type='text' name='eventName' placeholder="Nom de l'événement">
+    		<input type='submit' id="bouton" value='Valider Nom'>
+  		</form>
+  		<div id="calendar"></div>
+		{{> formulaireChargeur}}<br>
+		{{> formulaireListe}}<br>
+		{{> formulaireInvite}}<br>
+		{{> formulaireBlocTexte}}
+	</div>
+</template>
+
+<template name="evenement">
+</template>
+
+<!--Templates secondaires-->
+
+<template name="formulaireChargeur">
+	<!--Template qui permet de charger un événement archivé-->
+	<h3>Archives disponibles:</h3>
+	<ul>
+		{{#each archivesFormulaire}}
+			<li class="archive {{selectedArchiveClass}}">Événement "{{name}}" du : {{date}}</li>
+    	{{/each}}
+  	</ul> 
+  	<input type="button" class="chargeur" id="bouton" value="Charger cet événement">
+  	<input type="button" class="remove" id="bouton" value="Supprimer archive">
+</template><!--fin formulaireChargeur-->
+
+<template name="formulaireCalendrier">
+	<!--Template du calendrier sur le formulaire-->
+	<div id="calendar"></div>
+	<!--<input type="button" class="eventCreator" value="Clickez ici pour valider la date">-->
+</template>
+
+<template name="formulaireListe">
+	<h3>Objets à apporter</h3>
+	<ul>
+		{{#each items}}
+			<li class="item {{selectedFormulaireClass}}">{{name}} - Quantité : {{quantity}}</li>
+		{{/each}}
+	</ul>	
+	<form class='itemNameForm'>
+    	<input type="text" name="itemName" id='champNom'>
+    	<input type="submit" id="bouton" value="Ajouter Objet">
+    	<input type="button" class="remove" id="bouton" value="Enlever objet">
+  	</form>
+  	<form class="itemNumberForm">
+    	<input type='number' name='itemNumber' placeholder=1 min=1>
+   		<input type='submit' id="bouton" value='Modifier Quantité'>
+  	</form>
+</template>
+
+<template name="formulaireInvite">
+  <h3>Liste des invités (optionnel)</h3>
+  <ul>
+    {{#each invites}}
+      <li class="invite {{selectedClass}}">{{name}}</li>
+    {{/each}}
+  </ul> 
+  <form class='inviteNameForm'>
+    <input type="text" name="inviteName" id='champNomInvite'>
+    <input type="submit" id="bouton" value="Ajouter invité">
+    <input type="button" class="remove" id="bouton" value="Enlever invité">
+  </form>
+</template>
+
+<template name="formulaireBlocTexte">
+	<!--ce template contiens les éléments de confirmation et le bloc de message-->
+	<h3>Description (optionnel)</h3>
+	<textarea placeholder="Entrez votre message ici, max 255 caractères" id="blocTexte" rows="6" cols="50" maxlength=255></textarea> <br>
+	<input type="button" class="eventSave" id="bouton" value="Archiver l'événement"> <br>
+	<input type="button" class="eventValid" id="bouton" value="Confirmer événement (ATTENTION: la liste d'objet sera effacée)">
+</template><!--fin formulaireBlocTexte-->
