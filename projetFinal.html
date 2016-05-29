@@ -1,5 +1,5 @@
 <head>
-  <title>projetProginter</title>
+  <title>Party Planner 2000</title>
   <script>
 	//script d'initialisation du calendrier. Il DOIT être ici d'après le tuto
  	$(document).ready(function() {
@@ -20,28 +20,39 @@
 </head>
 
 <body>
-  <h1>Projet Proginter</h1>
+  <h1>Party Planner 2000</h1>
   <div class="login">{{> loginButtons}} </div>
-  {{> profil}} <br>
-  {{> formulaire}}
+  <div class="contenu">
+  	{{> pageAccueil}}
+  	{{> profil}} <br>
+  	{{> formulaire}}
+  </div>
 </body>
 
 <!-- Templates primaires-->
 <template name="pageAccueil">
+	<input type="button" class="bouton showAccueilPage" value="{{valueAccueilButton}}">
+	<div class="{{visibleAccueilPage}}">
+  		<h1 class="titreAccueil">Party Planner 2000</h1>
+  		<input type="button" class="bouton createEventFromAccueil" value="Créer un événement">
+  		<div id="texteBienvenue">Bienvenue sur Party Planner 2000! Vous pouvez vous connecter ou simplement créer une liste.</div>
+  		<div id="texteDescription">Le logiciel consiste en un organisateur d'événements (fêtes, rencontres, autres) simple qui permet au créateur de choisir une liste d'objets (nourriture, matériel, autres). Les invités recevront alors pas e-mail un lien d'une page d'événement contenant la liste. La personne pourra alors confirmer sa présence lors de l'événement en séléctionnant un élément de la liste qu'il s'engage à apporter. La liste est extrêmement modulable, le créateur d'événement peut également laisser aux invités le loisir d'amener ce qu'ils souhaitent, voir de ne rien amener du tout le cas échéant.</div>
+	</div>
 </template>
 
 <template name="profil">
-	<input type="button" class="showProfilePage" id="bouton" value="{{valueProfileButton}}">
+	<input type="button" class="showProfilePage bouton" value="{{valueProfileButton}}">
 	<div class="{{visibleProfilePage}}">
 	
-	<input type="button" class="createEventFromProfil" id="bouton" value="Créer un événement">
+	<h2 class="titrePage">Profil personnel</h2> <hr>
+	<input type="button" class="createEventFromProfil bouton" value="Créer un événement">
 	
 	<div class="currentEvents">
 		<h3>Evénemnents en cours</h3>
 		{{#each eventProfil}}
 			<li class="evenementsCours">
 				{{name}} - {{date}}
-				<input type="button" class="goEvent" id="bouton" value="Aller sur la page de l'événement">
+				<input type="button" class="goEvent bouton" value="Aller sur la page de l'événement">
 			</li>
 		{{/each}}
 	</div>
@@ -60,7 +71,7 @@
 		<form class="addContactForm">
 			<input type="text" name="nomContact" placeholder="Entrer le nom">
 			<input type="text" name="emailContact" placeholder="Entrer un email">
-			<input type="submit" id="bouton" value="Ajouter">
+			<input type="submit" value="Ajouter">
 		</form>
 	</div>
 
@@ -69,8 +80,8 @@
 		{{#each contactsProfil}}
 			<li class="contactProfil {{selectedContactClass}}">
 				{{name}} - {{email}}
-				<input type="button" class="editContact" id="bouton" value="Modifier le contact">
-				<input type="button" class="deleteContact" id="bouton" value="Supprimer le contact">
+				<input type="button" class="editContact bouton" value="Modifier le contact">
+				<input type="button" class="deleteContact bouton" value="Supprimer le contact">
 			</li>
 		{{/each}}
 
@@ -78,8 +89,8 @@
 			<form class="editContactForm">
 				<input type="text" name="editNomContact" placeholder="Entrer le nom">
 				<input type="text" name="editEmailContact" placeholder="Entrer un email">
-				<input type="submit" id="bouton" value="Modifier">
-				<input type="button" class="closeEdit" id="bouton" value="Annuler">
+				<input type="submit" value="Modifier">
+				<input type="button" class="closeEdit bouton" value="Annuler">
 			</form>
 		{{/if}}
 	</div>
@@ -88,11 +99,12 @@
 </template>
 
 <template name="formulaire">
-	<input type="button" class="showFormulairePage" id="bouton" value="{{valueFormulaireButton}}">
+	<input type="button" class="showFormulairePage bouton" value="{{valueFormulaireButton}}">
 	<div class="{{visibleFormulairePage}}">
+	<h2 class="titrePage">Création d'événement</h2> <hr>
 		<form class="nomFormulaireForm">
     		<input type='text' name='eventName' placeholder="Nom de l'événement">
-    		<input type='submit' id="bouton" value='Valider Nom'>
+    		<input type='submit' value='Valider Nom'>
   		</form>
   		<div id="calendar"></div>
 		{{> formulaireChargeur}}<br>
@@ -115,8 +127,8 @@
 			<li class="archive {{selectedArchiveClass}}">Événement "{{name}}" du : {{date}}</li>
     	{{/each}}
   	</ul> 
-  	<input type="button" class="chargeur" id="bouton" value="Charger cet événement">
-  	<input type="button" class="remove" id="bouton" value="Supprimer archive">
+  	<input type="button" class="chargeur bouton" value="Charger cet événement">
+  	<input type="button" class="remove bouton" value="Supprimer archive">
 </template><!--fin formulaireChargeur-->
 
 <template name="formulaireCalendrier">
@@ -127,19 +139,19 @@
 
 <template name="formulaireListe">
 	<h3>Objets à apporter</h3>
+	<form class='itemNameForm'>
+    	<input type="text" name="itemName" id='champNom'>
+    	<input type="submit" value="Ajouter Objet">
+    	<input type="button" class="remove bouton" value="Enlever objet">
+  	</form>
 	<ul>
 		{{#each items}}
 			<li class="item {{selectedFormulaireClass}}">{{name}} - Quantité : {{quantity}}</li>
 		{{/each}}
 	</ul>	
-	<form class='itemNameForm'>
-    	<input type="text" name="itemName" id='champNom'>
-    	<input type="submit" id="bouton" value="Ajouter Objet">
-    	<input type="button" class="remove" id="bouton" value="Enlever objet">
-  	</form>
   	<form class="itemNumberForm">
     	<input type='number' name='itemNumber' placeholder=1 min=1>
-   		<input type='submit' id="bouton" value='Modifier Quantité'>
+   		<input type='submit' value='Modifier Quantité'>
   	</form>
 </template>
 
@@ -152,8 +164,8 @@
   </ul> 
   <form class='inviteNameForm'>
     <input type="text" name="inviteName" id='champNomInvite'>
-    <input type="submit" id="bouton" value="Ajouter invité">
-    <input type="button" class="remove" id="bouton" value="Enlever invité">
+    <input type="submit" value="Ajouter invité">
+    <input type="button" class="remove bouton" value="Enlever invité">
   </form>
 </template>
 
@@ -161,6 +173,6 @@
 	<!--ce template contiens les éléments de confirmation et le bloc de message-->
 	<h3>Description (optionnel)</h3>
 	<textarea placeholder="Entrez votre message ici, max 255 caractères" id="blocTexte" rows="6" cols="50" maxlength=255></textarea> <br>
-	<input type="button" class="eventSave" id="bouton" value="Archiver l'événement"> <br>
-	<input type="button" class="eventValid" id="bouton" value="Confirmer événement (ATTENTION: la liste d'objet sera effacée)">
+	<input type="button" class="eventSave bouton" value="Archiver l'événement"> <br>
+	<input type="button" class="eventValid bouton" value="Confirmer événement (ATTENTION: la liste d'objet sera effacée)">
 </template><!--fin formulaireBlocTexte-->

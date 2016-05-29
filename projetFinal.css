@@ -2,17 +2,41 @@ body{
 	font-family: Arial;
 }
 
+.contenu{
+	margin: auto;
+	width: 70%;
+	border: 2px solid black;
+	padding: 10px;
+	text-align: center;
+}
+
 .login{
 	text-align: right;
 }
 
-#bouton{
+.bouton{
 	padding: 5px 10px;
-	margin-bottom: 20px;
+	border-radius: 20px;
+}
+
+hr{
+	width: 60%;
+	margin-bottom: 30px;
 }
 
 li{
 	list-style-type: none;
+}
+
+.titrePage{
+	text-align: center;
+}
+
+#texteDescription{
+	font-style: italic;
+	text-align: justify;
+	margin-top: 20px;
+	padding: 20px;
 }
 
 .selectedContact{
@@ -24,7 +48,8 @@ li{
 }
 
 #calendar{
-
+	margin: auto;
+	width: 80%;
 }
 
 .hidePage{

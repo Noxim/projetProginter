@@ -17,8 +17,29 @@ if (Meteor.isClient) {
   Meteor.subscribe('theItems');
   Meteor.subscribe('theInvites');
 
+  Session.set('showingAccueil', 0);
   Session.set('showingProfile', 0);
   Session.set('showingFormulaire', 0);
+  Session.set('showingEvenement', 0);
+
+  Template.pageAccueil.helpers({
+    'visibleAccueilPage': function(){
+      var visibleAccueil = Session.get('showingAccueil');
+      if (visibleAccueil % 2 == 0) {
+        return "hidePage"
+      }
+    },
+
+    // fonction pour changer la valeur du boutton "montrer/cacher le profil"
+    'valueAccueilButton': function(){
+      var visibleAccueil = Session.get('showingAccueil');
+      if (visibleAccueil % 2 == 0) {
+        return "Montrer l'accueil"
+      } else {
+        return "Cacher l'accueil"
+      }
+    }
+  })
 
   Template.profil.helpers({
     // fonction pour afficher la liste des contacts, triés alphabétiquement
@@ -130,6 +151,17 @@ if (Meteor.isClient) {
         if(inviteId == selectedInvite){
             return "selectedFormulaire";
         }
+    }
+  })
+
+  Template.pageAccueil.events({
+    'click .showAccueilPage':function(){
+      Session.set('showingAccueil', Session.get('showingAccueil')+1);
+    },
+
+    'click .createEventFromAccueil': function(){
+      Session.set('showingFormulaire', 1);
+      Session.set('showingAccueil', 0);
     }
   })
 
@@ -314,7 +346,7 @@ if (Meteor.isServer) {
 
   Meteor.publish('theContacts', function(){
     var currentUserId = this.userId;
-    return contactsList.find({createdBy:currentUserId})
+    return contactsList.find({createdBy: currentUserId})
   });
 
   Meteor.publish('theItems', function(){
@@ -345,8 +377,8 @@ if (Meteor.isServer) {
       contactsList.update({
         _id: selectedContact,
         createdBy: currentUserId},
-        {name: editNomContactVar,
-        email: editEmailContactVar
+        {$set:{name: editNomContactVar,
+        email: editEmailContactVar}
       })
     },
 
