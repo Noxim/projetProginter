@@ -87,7 +87,7 @@ if (Meteor.isClient) {
   Template.formulaire.events({
     'submit .nomFormulaireForm': function(){
       event.preventDefault();
-      var eventNameVar = event.target.eventName.value;
+      var eventNameVar = event.target.eventNameName.value;
       Session.set('eventNameSession', eventNameVar);
       alert(Session.get('eventNameSession'));
     }
@@ -103,9 +103,18 @@ if (Meteor.isClient) {
     },
     'click .chargeur' :  function(){
       var archiveVar = Session.get('selectedArchive')
-      Meteor.call('loadArchiveData', archiveVar);
-      Meteor.call('insertArchivedItem', archiveVar);
-      Meteor.call('insertArchivedInvite', archiveVar);
+      var dayVar = archives.findOne({_id: archiveVar}).date;     
+      var currentUserId = Meteor.userId();
+      var savedArchive = archives.findOne({_id : archiveVar})
+
+      if(currentUserId){
+          document.getElementById('blocTexte').value = savedArchive.message;  
+          document.getElementById('eventNameId').value = savedArchive.name;
+          Meteor.call('insertArchivedItem', archiveVar);
+          Meteor.call('insertArchivedInvite', archiveVar);
+          Session.set('selectedDay', dayVar);
+        }
+
     },
     'click .remove' : function(){
       var selectedArchive = Session.get('selectedArchive');
@@ -261,7 +270,7 @@ Meteor.methods({
       'archiveEventData': function (messageValue, date, eventName){
       check(messageValue, String);
       var currentUserId = Meteor.userId();
-        if(currentUserId && date && eventNameSession){
+        if(currentUserId && date && eventName){
          archives.insert({
             date: date,
             name: eventName,
@@ -307,18 +316,6 @@ Meteor.methods({
          for(var i = 0; i < savedArchiveInvite.length; i++){
             Meteor.call('insertInviteData', savedArchiveInvite[i].name, savedArchiveInvite[i].createdBy)
           }
-      },
-
-
-      'loadArchiveData': function(archiveId){//fonction qui extrait les données des archives et les charge dans la page courante
-        var currentUserId = Meteor.userId();
-        var savedArchive = archives.findOne({_id : archiveId})
-
-        if(currentUserId){
-          Session.set('selectedDay', savedArchive.date);
-          alert(Session.get('selectedDay'))
-          document.getElementById('blocTexte').value = savedArchive.message;  
-        }
       },
 
       'sendMail':function(to, text){
