@@ -1,5 +1,6 @@
 body{
 	font-family: Arial;
+	font-size: 90%;
 }
 
 .contenu{
@@ -16,16 +17,29 @@ body{
 
 .bouton{
 	padding: 5px 10px;
-	border-radius: 20px;
+	border-radius: 10px;
 }
 
 hr{
 	width: 60%;
+	margin-top: 20px;
 	margin-bottom: 30px;
 }
 
 li{
 	list-style-type: none;
+}
+
+table{
+	margin: auto;
+}
+
+td{
+	padding: 0px 8px;
+}
+
+.tableContactName{
+	border-right: 1px solid black;
 }
 
 .titrePage{
@@ -43,12 +57,21 @@ li{
 	font-weight: bold;
 }
 
+.createEventFromProfil{
+	background-color: blue;
+	color: white;
+	padding: 10px 25px;
+	border-radius: 0px;
+	border: none;
+}
+
 .selectedFormulaire{
 	font-weight:bold;
 }
 
 #calendar{
 	margin: auto;
+	padding: 30px 0px;
 	width: 80%;
 }
 

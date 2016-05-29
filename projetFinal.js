@@ -9,6 +9,7 @@ inviteList = new Mongo.Collection('invites');
 archives = new Mongo.Collection('archives');
 evenementsEnCours = new Mongo.Collection('event');
 contactsList = new Mongo.Collection('contacts');
+participantList = new Mongo.Collection('participants');
 
 if (Meteor.isClient) {
   Meteor.subscribe('theCurrentEvents');
@@ -16,17 +17,22 @@ if (Meteor.isClient) {
   Meteor.subscribe('theContacts');
   Meteor.subscribe('theItems');
   Meteor.subscribe('theInvites');
+  Meteor.subscribe('theParticipants');
 
   Session.set('showingAccueil', 0);
   Session.set('showingProfile', 0);
   Session.set('showingFormulaire', 0);
-  Session.set('showingEvenement', 0);
+  Session.set('showingEvenement', 1);
 
   Template.pageAccueil.helpers({
     'visibleAccueilPage': function(){
       var visibleAccueil = Session.get('showingAccueil');
       if (visibleAccueil % 2 == 0) {
         return "hidePage"
+      } else{
+        Session.set('showingProfile', 0);
+        Session.set('showingFormulaire', 0);
+        Session.set('showingEvenement', 0);
       }
     },
 
@@ -79,6 +85,10 @@ if (Meteor.isClient) {
       var visibleProfile = Session.get('showingProfile');
       if (visibleProfile % 2 == 0) {
         return "hidePage"
+      } else{
+        Session.set('showingAccueil', 0);
+        Session.set('showingFormulaire', 0);
+        Session.set('showingEvenement', 0);
       }
     },
 
@@ -90,6 +100,13 @@ if (Meteor.isClient) {
       } else {
         return "Cacher le profil"
       }
+    },
+
+    'visibleProfileUser': function(){
+      var currentUserId = Meteor.userId();
+      if (!currentUserId) {
+        return "hidePage"
+      }
     }
   })
 
@@ -98,6 +115,10 @@ if (Meteor.isClient) {
       var visibleFormulaire = Session.get('showingFormulaire');
       if (visibleFormulaire % 2 == 0) {
         return "hidePage"
+      } else{
+        Session.set('showingAccueil', 0);
+        Session.set('showingProfile', 0);
+        Session.set('showingEvenement', 0);
       }
     },
 
@@ -151,6 +172,61 @@ if (Meteor.isClient) {
         if(inviteId == selectedInvite){
             return "selectedFormulaire";
         }
+    }
+  })
+
+  Template.evenement.helpers({
+    'afficherNomEvenement': function(){
+      var eventIdVar = Session.get('eventId');
+      return evenementsEnCours.findOne(eventIdVar).name
+    },
+
+    'afficherDateEvenement': function(){
+      var eventIdVar = Session.get('eventId');
+      return evenementsEnCours.findOne(eventIdVar).date
+    },
+
+    'afficherObjets': function(){
+      var eventIdVar = Session.get('eventId');
+      Meteor.call('insertItemEvenement', eventIdVar);
+      return itemList.find()
+    },
+
+    'afficherParticipants': function(){
+      var eventIdVar = Session.get('eventId');
+      return participantList.find({eventId:eventIdVar})
+    },
+
+    'compter' : function(){
+      var eventIdVar = Session.get('eventId');
+      var nombre = participantList.find({eventId:eventIdVar}).count();
+      if (nombre>1){
+        return nombre+" participants";
+      } else {
+        return nombre+" participant";
+      }
+    },
+
+
+
+    'visibleEvenementPage': function(){
+      var visibleEvenement = Session.get('showingEvenement');
+      if (visibleEvenement % 2 == 0) {
+        return "hidePage"
+      } else{
+        Session.set('showingAccueil', 0);
+        Session.set('showingProfile', 0);
+        Session.set('showingFormulaire', 0);
+      }
+    },
+
+    'valueEvenementButton': function(){
+      var visibleEvenement = Session.get('showingEvenement');
+      if (visibleEvenement % 2 == 0) {
+        return "Montrer l'événement"
+      } else {
+        return "Cacher l'événement"
+      }
     }
   })
 
@@ -230,9 +306,26 @@ if (Meteor.isClient) {
     // fonction lors du click sur "aller sur la page de l'événement"
     'click .goEvent': function(){
       var eventIdFromProfile = this._id;
-      console.log(eventIdFromProfile);
+      Session.set('eventId', eventIdFromProfile);
       Session.set('showingEvenement', 1);
       Session.set('showingProfile', 0);
+    },
+
+    'click .goArchive': function(){
+      Session.set('showingProfile',0);
+      Session.set('showingFormulaire',1);
+      var archiveVar = this._id;
+      var dayVar = archives.findOne({_id: archiveVar}).date;     
+      var currentUserId = Meteor.userId();
+      var savedArchive = archives.findOne({_id : archiveVar})
+ 
+      if(currentUserId){
+        document.getElementById('blocTexte').value = savedArchive.message;  
+        document.getElementById('eventNameId').value = savedArchive.name;
+        Meteor.call('insertArchivedItem', archiveVar);
+        Meteor.call('insertArchivedInvite', archiveVar);
+        Session.set('selectedDay', dayVar);
+      }
     }
   })
 
@@ -243,7 +336,7 @@ if (Meteor.isClient) {
 
     'submit .nomFormulaireForm': function(){
       event.preventDefault();
-      var eventNameVar = event.target.eventName.value;
+      var eventNameVar = event.target.eventNameName.value;
       Session.set('eventNameSession', eventNameVar);
       alert(Session.get('eventNameSession'));
     }
@@ -257,9 +350,18 @@ if (Meteor.isClient) {
 
     'click .chargeur' :  function(){
       var archiveVar = Session.get('selectedArchive')
-      Meteor.call('loadArchiveData', archiveVar);
-      Meteor.call('insertArchivedItem', archiveVar);
-      Meteor.call('insertArchivedInvite', archiveVar);
+      var dayVar = archives.findOne({_id: archiveVar}).date;     
+      var currentUserId = Meteor.userId();
+      var savedArchive = archives.findOne({_id : archiveVar})
+ 
+      if(currentUserId){
+        document.getElementById('blocTexte').value = savedArchive.message;  
+        document.getElementById('eventNameId').value = savedArchive.name;
+        Meteor.call('insertArchivedItem', archiveVar);
+        Meteor.call('insertArchivedInvite', archiveVar);
+        Session.set('selectedDay', dayVar);
+      }
+
     },
     
     'click .remove' : function(){
@@ -320,6 +422,7 @@ if (Meteor.isClient) {
       if(confirm('Avez vous bien fini de concevoir votre événement?')){
         Meteor.call("createEventData", messageValue, date, name);
         Session.set('showingFormulaire',0);
+        Session.set('showingEvenement', 1);
       }
     },
 
@@ -331,6 +434,22 @@ if (Meteor.isClient) {
     }
 
   })
+
+  Template.evenement.events({
+    'click .showEvenementPage':function(){
+      Session.set('showingEvenement', Session.get('showingEvenement')+1);
+    }
+  })
+
+  Template.evenementParticipant.events({
+    'submit .participantsEvenementForm': function(){
+      event.preventDefault();
+      var nomParticipantVar = event.target.participantName.value;
+      var eventIdVar = Session.get('eventId');
+      Meteor.call('insertParticipantData', nomParticipantVar, eventIdVar);
+      document.getElementById('participantNameField').value='';
+    }
+});
 }
 
 if (Meteor.isServer) {
@@ -357,6 +476,10 @@ if (Meteor.isServer) {
   Meteor.publish('theInvites', function(){
     var currentUserId = this.userId;
     return inviteList.find({createdBy: currentUserId})
+  });
+
+  Meteor.publish('theParticipants', function(){
+    return participantList.find()
   });
 
   Meteor.methods({
@@ -527,22 +650,11 @@ if (Meteor.isServer) {
       },
 
       'insertArchivedInvite': function(archiveId){
-        var savedArchive = archives.findOne({_id : archiveId})
-        var savedArchiveInvite = savedArchive.invites
+        var savedArchive = archives.findOne({_id : archiveId});
+        var savedArchiveInvite = savedArchive.invites;
          for(var i = 0; i < savedArchiveInvite.length; i++){
             Meteor.call('insertInviteData', savedArchiveInvite[i].name, savedArchiveInvite[i].createdBy)
           }
-      },
-
-      'loadArchiveData': function(archiveId){//fonction qui extrait les données des archives et les charge dans la page courante
-        var currentUserId = Meteor.userId();
-        var savedArchive = archives.findOne({_id : archiveId})
-
-        if(currentUserId){
-          Session.set('selectedDay', savedArchive.date);
-          alert(Session.get('selectedDay'))
-          document.getElementById('blocTexte').value = savedArchive.message;  
-        }
       },
 
       'sendMail':function(to, text){
@@ -552,6 +664,32 @@ if (Meteor.isServer) {
           subject: 'Invitation à un événement [ph]',
           text: text
         })
+      },
+
+      'insertParticipantData': function(nomParticipant, eventId){
+        participantList.insert({
+          name: nomParticipant,
+          eventId: eventId
+        })
+      },
+
+      'insertItemEvenement': function(eventId){
+        var event = evenementsEnCours.findOne({_id : eventId})
+        var eventItems = event.objets
+        for(var i = 0; i < eventItems.length; i++){
+          Meteor.call('insertItemEventData', eventItems[i].name, eventItems[i].quantity, eventItems[i].createdBy)
+        }
+      },
+
+      'insertItemEventData': function(itemNameVar, quantityNo, userId){
+        var currentUserId = Meteor.userId();
+        if(currentUserId){
+          itemList.insert({
+            name: itemNameVar,
+            quantity: quantityNo,
+            createdBy: userId
+        })
       }
+    }
   });
 }
