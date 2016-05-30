@@ -2,6 +2,7 @@
   accounts-ui
   accounts-password
   fullcalendatr:fullcalendar
+  email
 */
 
 itemList = new Mongo.Collection('items');
@@ -461,7 +462,7 @@ if (Meteor.isClient) {
       var messageValue=document.getElementById("blocTexte").value;
       var date = Session.get('selectedDay');
       var name = Session.get('eventNameSession');
-      if(confirm('Avez vous bien fini de concevoir votre événement?')){
+      if(confirm('Avez vous bien fini de concevoir votre événement?') && name && date){
         Meteor.call("createEventData", messageValue, date, name);
         Session.set('showingFormulaire',0);
         Session.set('showingProfile', 1);
@@ -532,6 +533,11 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+
+  /*Meteor.startup(function(){ Cette fonction, lancée au lancement de l'application, définit la variable environnementale MAIL_URL à une valeur défaut, qui n'existe malheureusement pas concrètement. Donc pas de moyen de le tester.
+    process.env.MAIL_URL="smtp://USERNAME:PASSWORD@HOST:PORT/";
+  });*/
+
   Meteor.publish('theCurrentEvents', function(){
     var currentUserId = this.userId;
     return evenementsEnCours.find({createdBy:currentUserId})
@@ -741,7 +747,7 @@ if (Meteor.isServer) {
           }
       },
 
-      'sendMail':function(to, text){
+      'sendMail':function(to, subject, text){ //cette fonction n'est pas appelée, mais elle permet théoriquement d'envoyer un mail.
         Email.send({
           to: to,
           from: userMail,
