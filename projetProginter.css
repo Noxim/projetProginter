@@ -1,74 +1,94 @@
-/* Oubliez pas de dire où vous vous servez des classes*/
-
-/*Général*/
-
 body{
-	padding:15px;
-	font-family:arial;
-	color:#505050;
-}
-h1, h2 {
-	padding-bottom:25px;
-	font-size:20px;
-	text-align:center;
-}
-h2{
-	font-size:16px;
+	font-family: Arial;
+	font-size: 90%;
 }
 
-/*Conteneurs*/
-
-.c1 {
-	width:800px;
-	padding:25px;
-	margin:auto;
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#cad6d5');
--ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#cad6d5')";
-background-image: -moz-linear-gradient(top, #ffffff, #cad6d5);
-background-image: -ms-linear-gradient(top, #ffffff, #cad6d5);
-background-image: -o-linear-gradient(top, #ffffff, #cad6d5);
-background-image: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#cad6d5));
-background-image: -webkit-linear-gradient(top, #ffffff, #cad6d5);
-background-image: linear-gradient(top, #ffffff, #cad6d5);
-
-}
-.c2, .c3 {
-	width:325px;
-	border:solid 1px #E8E8E8 ;
-	-webkit-border-radius: 0px 0px 15px 15px;
-	border-radius: 0px 0px 15px 15px;
-	background-color:#EEE;
-}
-.c2{
-	float:left;
-}
-.c3, select, button{
-	float:right;
-}
-.clear {
-  clear: both;
+.contenu{
+	margin: auto;
+	width: 70%;
+	border: 2px solid black;
+	padding: 10px;
+	text-align: center;
 }
 
-/*Formulaires*/
-fieldset{
-	padding:15px;
-}
-/*Boutons*/
-button {
-  -webkit-border-radius: 12;
-  -moz-border-radius: 12;
-  border-radius: 12px;
-  font-family: Arial;
-  color: #000000;
-  font-size: 16px;
-  background: #EEE;
-  padding: 10px 10px;
-  margin:20px 0px;
-  border: solid #000000 0px;
-
+.login{
+	text-align: left;
 }
 
-button:hover {
-  background:#e0e0e0;;
-  text-decoration: none;
+.bouton{
+	padding: 5px 10px;
+	border-radius: 10px;
+}
+
+hr{
+	width: 60%;
+	margin-top: 20px;
+	margin-bottom: 30px;
+}
+
+li{
+	list-style-type: none;
+}
+
+table{
+	margin: auto;
+}
+
+td{
+	padding: 0px 8px;
+}
+
+.tableContactName{
+	border-right: 1px solid black;
+}
+
+.titrePage{
+	text-align: center;
+}
+
+#texteBienvenue{
+	font-weight: bold;
+}
+
+#texteDescription{
+	font-style: italic;
+	text-align: justify;
+	margin-top: 20px;
+	padding: 20px;
+}
+
+#texteNotUser{
+	font-weight: bold;
+	padding-bottom: 20px;
+}
+
+.selectedContact{
+	font-weight: bold;
+}
+
+.createEventFromProfil{
+	background-color: #2595BA;
+	color: white;
+	padding: 10px 25px;
+	border-radius: 0px;
+	border: none;
+	font-weight: bold;
+}
+
+.selectedFormulaire{
+	font-weight:bold;
+}
+
+.selectedItem{
+	color: red;
+}
+
+#calendar{
+	margin: auto;
+	padding: 30px 0px;
+	width: 80%;
+}
+
+.hidePage{
+	display: none;
 }
