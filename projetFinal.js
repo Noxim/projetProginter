@@ -10,6 +10,7 @@ archives = new Mongo.Collection('archives');
 evenementsEnCours = new Mongo.Collection('event');
 contactsList = new Mongo.Collection('contacts');
 participantList = new Mongo.Collection('participants');
+itemListPerso = new Mongo.Collection('itemsPerso');
 
 if (Meteor.isClient) {
   Meteor.subscribe('theCurrentEvents');
@@ -18,13 +19,19 @@ if (Meteor.isClient) {
   Meteor.subscribe('theItems');
   Meteor.subscribe('theInvites');
   Meteor.subscribe('theParticipants');
+  Meteor.subscribe('theItemsPerso');
 
-  Session.set('showingAccueil', 0);
+  Session.set('showingAccueil', 1);
   Session.set('showingProfile', 0);
   Session.set('showingFormulaire', 0);
-  Session.set('showingEvenement', 1);
+  Session.set('showingEvenement', 0);
 
   Template.pageAccueil.helpers({
+    'isLoggedIn': function(){
+      var currentUserId = Meteor.userId();
+      return currentUserId
+    },
+
     'visibleAccueilPage': function(){
       var visibleAccueil = Session.get('showingAccueil');
       if (visibleAccueil % 2 == 0) {
@@ -176,6 +183,28 @@ if (Meteor.isClient) {
   })
 
   Template.evenement.helpers({
+    'checkItemListPerso': function(){
+      return itemListPerso.find()
+    },
+
+    'showSelectedItem':function(){
+      var selectedItem = Session.get('selectedItemEvenement');
+      return itemList.findOne(selectedItem)
+    },
+
+    'selectedItemEventClass': function(){
+      var itemId = this._id;
+      var selectedItem = Session.get('selectedItemEvenement');
+      if (itemId == selectedItem) {
+        return "selectedItem"
+      }
+    },
+
+    'afficherNomParticipant': function(){
+      var nomParticipantVar = Session.get('participantNameSession');
+      return nomParticipantVar
+    },
+
     'afficherNomEvenement': function(){
       var eventIdVar = Session.get('eventId');
       return evenementsEnCours.findOne(eventIdVar).name
@@ -189,12 +218,17 @@ if (Meteor.isClient) {
     'afficherObjets': function(){
       var eventIdVar = Session.get('eventId');
       Meteor.call('insertItemEvenement', eventIdVar);
-      return itemList.find()
+      return itemList.find({eventId:eventIdVar})
     },
 
     'afficherParticipants': function(){
       var eventIdVar = Session.get('eventId');
       return participantList.find({eventId:eventIdVar})
+    },
+
+    'afficherObjetsPerso': function(){
+      var eventIdVar = Session.get('eventId');
+      return itemListPerso.find({eventId:eventIdVar})
     },
 
     'compter' : function(){
@@ -206,8 +240,6 @@ if (Meteor.isClient) {
         return nombre+" participant";
       }
     },
-
-
 
     'visibleEvenementPage': function(){
       var visibleEvenement = Session.get('showingEvenement');
@@ -236,6 +268,8 @@ if (Meteor.isClient) {
     },
 
     'click .createEventFromAccueil': function(){
+      Meteor.call('removeAllItems');
+      Meteor.call('removeAllInvites');
       Session.set('showingFormulaire', 1);
       Session.set('showingAccueil', 0);
     }
@@ -299,12 +333,16 @@ if (Meteor.isClient) {
 
     // fonction lors du click sur "créer un événement"
     'click .createEventFromProfil': function(){
+      Meteor.call('removeAllItems');
+      Meteor.call('removeAllInvites');
       Session.set('showingFormulaire', 1);
       Session.set('showingProfile', 0);
     },
 
     // fonction lors du click sur "aller sur la page de l'événement"
     'click .goEvent': function(){
+      Meteor.call('removeAllItems');
+      Meteor.call('removeAllItemsPerso');
       var eventIdFromProfile = this._id;
       Session.set('eventId', eventIdFromProfile);
       Session.set('showingEvenement', 1);
@@ -320,6 +358,8 @@ if (Meteor.isClient) {
       var savedArchive = archives.findOne({_id : archiveVar})
  
       if(currentUserId){
+        Meteor.call('removeAllItems');
+        Meteor.call('removeAllInvites');
         document.getElementById('blocTexte').value = savedArchive.message;  
         document.getElementById('eventNameId').value = savedArchive.name;
         Meteor.call('insertArchivedItem', archiveVar);
@@ -349,12 +389,14 @@ if (Meteor.isClient) {
     },
 
     'click .chargeur' :  function(){
-      var archiveVar = Session.get('selectedArchive')
+      var archiveVar = Session.get('selectedArchive');
       var dayVar = archives.findOne({_id: archiveVar}).date;     
       var currentUserId = Meteor.userId();
       var savedArchive = archives.findOne({_id : archiveVar})
  
       if(currentUserId){
+        Meteor.call('removeAllItems');
+        Meteor.call('removeAllInvites');
         document.getElementById('blocTexte').value = savedArchive.message;  
         document.getElementById('eventNameId').value = savedArchive.name;
         Meteor.call('insertArchivedItem', archiveVar);
@@ -422,7 +464,7 @@ if (Meteor.isClient) {
       if(confirm('Avez vous bien fini de concevoir votre événement?')){
         Meteor.call("createEventData", messageValue, date, name);
         Session.set('showingFormulaire',0);
-        Session.set('showingEvenement', 1);
+        Session.set('showingProfile', 1);
       }
     },
 
@@ -438,18 +480,55 @@ if (Meteor.isClient) {
   Template.evenement.events({
     'click .showEvenementPage':function(){
       Session.set('showingEvenement', Session.get('showingEvenement')+1);
+    },
+
+    'submit .nomParticipantForm': function(){
+      event.preventDefault();
+      var participantNameVar = event.target.participantNameName.value;
+      Session.set('participantNameSession', participantNameVar);
+      //alert(Session.get('participantNameSession'));
+      document.getElementById('participantNameId').value="";
+    },
+
+    'click .choixObjet': function(){
+      var itemId = this._id;
+      console.log(itemId);
+      Session.set('selectedItemEvenement',itemId);
+    },
+
+    'click .addItemListPerso': function(){
+      var itemIdVar = Session.get('selectedItemEvenement');
+      var eventIdVar = Session.get('eventId');
+      var nameItemVar = itemList.findOne(itemIdVar).name;
+      var quantityItemVar = itemList.findOne(itemIdVar).quantity;
+      Meteor.call('ajouterItemListPerso', eventIdVar, nameItemVar, quantityItemVar);
+      Session.set('selectedItemEvenement', "");
+    },
+
+    'click .confirmListPerso': function(){
+      var nameParticipantVar = Session.get('participantNameSession');
+      var eventIdVar = Session.get('eventId');
+      Meteor.call('createParticipant', nameParticipantVar, eventIdVar);
+      Session.set('participantNameSession', "");
     }
   })
 
-  Template.evenementParticipant.events({
+  /*Template.evenementParticipant.events({
     'submit .participantsEvenementForm': function(){
       event.preventDefault();
-      var nomParticipantVar = event.target.participantName.value;
-      var eventIdVar = Session.get('eventId');
-      Meteor.call('insertParticipantData', nomParticipantVar, eventIdVar);
-      document.getElementById('participantNameField').value='';
+      var isParticipantVar = Session.get('isParticipant');
+      if (!isParticipantVar) {
+        var nomParticipantVar = event.target.participantName.value;
+        var eventIdVar = Session.get('eventId');
+        Session.set('isParticipant', true);
+        Session.set('participantEvenement', nomParticipantVar);
+        Meteor.call('insertParticipantData', nomParticipantVar, eventIdVar);
+        document.getElementById('participantNameField').value='';
+      } else{
+        alert("Déjà participant");
+      }
     }
-});
+});*/
 }
 
 if (Meteor.isServer) {
@@ -480,6 +559,10 @@ if (Meteor.isServer) {
 
   Meteor.publish('theParticipants', function(){
     return participantList.find()
+  });
+
+  Meteor.publish('theItemsPerso', function(){
+    return itemListPerso.find()
   });
 
   Meteor.methods({
@@ -582,7 +665,7 @@ if (Meteor.isServer) {
     'createEventData': function(messageValue, date, eventName){
       check(messageValue, String);
       var currentUserId = Meteor.userId();
-        if(currentUserId && date){
+        if(currentUserId && date && eventName){
           evenementsEnCours.insert({
             date: date,
             name: eventName,
@@ -594,6 +677,7 @@ if (Meteor.isServer) {
          // alert("Validé");
           Meteor.call('removeAllItems');
           Meteor.call('removeAllInvites');
+
         }else{
           //alert("!! Données incorrectes !! Verifiez que vous avez bien séléctionné une date!")
         }
@@ -677,19 +761,45 @@ if (Meteor.isServer) {
         var event = evenementsEnCours.findOne({_id : eventId})
         var eventItems = event.objets
         for(var i = 0; i < eventItems.length; i++){
-          Meteor.call('insertItemEventData', eventItems[i].name, eventItems[i].quantity, eventItems[i].createdBy)
+          Meteor.call('insertItemEventData', eventId, eventItems[i].name, eventItems[i].quantity, eventItems[i].createdBy)
         }
       },
 
-      'insertItemEventData': function(itemNameVar, quantityNo, userId){
+      'insertItemEventData': function(eventIdVar, itemNameVar, quantityNo, userId){
         var currentUserId = Meteor.userId();
         if(currentUserId){
           itemList.insert({
             name: itemNameVar,
             quantity: quantityNo,
-            createdBy: userId
-        })
-      }
-    }
+            createdBy: userId,
+            eventId: eventIdVar
+          })
+        }
+      },
+
+      'ajouterItemListPerso':function(eventIdVar, nameItem, quantityItem){
+        if (nameItem) {
+          itemListPerso.insert({
+            eventId:eventIdVar,
+            name: nameItem,
+            quantity:quantityItem
+          })
+        }
+      },
+
+      'createParticipant': function(participantNameVar, eventIdVar){
+        if (participantNameVar) {
+          participantList.insert({
+            name: participantNameVar,
+            eventId: eventIdVar,
+            objets: itemListPerso.find({eventId:eventIdVar}).fetch()
+          })
+        }
+        Meteor.call('removeAllItemsPerso');
+      },
+
+      'removeAllItemsPerso': function(){
+          itemListPerso.remove({});
+        }
   });
 }

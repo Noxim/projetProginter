@@ -12,7 +12,7 @@ body{
 }
 
 .login{
-	text-align: right;
+	text-align: left;
 }
 
 .bouton{
@@ -46,6 +46,10 @@ td{
 	text-align: center;
 }
 
+#texteBienvenue{
+	font-weight: bold;
+}
+
 #texteDescription{
 	font-style: italic;
 	text-align: justify;
@@ -53,20 +57,30 @@ td{
 	padding: 20px;
 }
 
+#texteNotUser{
+	font-weight: bold;
+	padding-bottom: 20px;
+}
+
 .selectedContact{
 	font-weight: bold;
 }
 
 .createEventFromProfil{
-	background-color: blue;
+	background-color: #2595BA;
 	color: white;
 	padding: 10px 25px;
 	border-radius: 0px;
 	border: none;
+	font-weight: bold;
 }
 
 .selectedFormulaire{
 	font-weight:bold;
+}
+
+.selectedItem{
+	color: red;
 }
 
 #calendar{
